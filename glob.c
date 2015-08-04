@@ -2,9 +2,9 @@
 
 #define USE(x) asm volatile(""::"r"(x))
 
-int __attribute__((const)) use(int *var)
+void use(int var)
 {
-	return *var;
+	USE(var);
 }
 
 void  escape(int *var)

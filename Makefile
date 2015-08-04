@@ -17,7 +17,9 @@ LISTINGS = kod.s
 
 all:  $(LISTINGS)
 
-kod.s: kod.o
+kod: kod.o glob.o
+
+kod.s: kod
 	objdump -d $< > $@
 
 clean:
