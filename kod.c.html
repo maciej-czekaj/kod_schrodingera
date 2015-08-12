@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>~/projekty/kod_schrodingera/kod.c.html</title>
+<meta name="Generator" content="Vim/7.4">
+<meta name="plugin-version" content="vim7.4_v1">
+<meta name="syntax" content="c">
+<meta name="settings" content="use_css,pre_wrap,no_foldcolumn,expand_tabs,prevent_copy=">
+<meta name="colorscheme" content="default">
+<style type="text/css">
+<!--
+pre { white-space: pre-wrap; font-family: monospace; color: #000000; background-color: #ffffff; }
+body { font-family: monospace; color: #000000; background-color: #ffffff; }
+* { font-size: 1em; }
+.Type { color: #2e8b57; font-weight: bold; }
+.Statement { color: #a52a2a; font-weight: bold; }
+.PreProc { color: #800080; }
+.Constant { color: #ff00ff; }
+.Special { color: #6a5acd; }
+.Comment { color: #0000ff; }
+-->
+</style>
+
+<script type='text/javascript'>
+<!--
+
+-->
+</script>
+</head>
+<body>
+<pre id='vimCodeElement'>
+
+<span class="PreProc">#include </span><span class="Constant">&lt;stdio.h&gt;</span>
+<span class="PreProc">#include </span><span class="Constant">&lt;stdlib.h&gt;</span>
+
+<span class="Type">void</span> use(<span class="Type">int</span> var);
+<span class="Type">void</span> escape(<span class="Type">int</span> *var);
+<span class="Type">void</span> side_effect(<span class="Type">void</span>);
+
+<span class="Type">int</span> a,b;
+
+<span class="Comment">// Side effects and escape analysis</span>
+
+<span class="Type">void</span> code_1a()
+{
+  <span class="Type">int</span> a,b;
+  a = <span class="Constant">1</span>;
+  b = a + <span class="Constant">2</span>;
+  printf(<span class="Constant">&quot;Hello&quot;</span>);
+  a = b + <span class="Constant">1</span>;
+  use(a);
+  b = a + <span class="Constant">1</span>;
+  use(b);
+}
+
+<span class="Type">void</span> code_1b()
+{
+  <span class="Type">int</span> a,b;
+  a = <span class="Constant">1</span>;
+  b = a + <span class="Constant">2</span>;
+  printf(<span class="Constant">&quot;Hello&quot;</span>);
+  a = b + <span class="Constant">1</span>;
+  escape(&amp;a);
+  b = a + <span class="Constant">1</span>;
+  use(b);
+}
+
+<span class="Type">void</span> code_1c()
+{
+  a = <span class="Constant">1</span>;
+  b = a + <span class="Constant">2</span>;
+  printf(<span class="Constant">&quot;Hello&quot;</span>);
+  a = b + <span class="Constant">1</span>;
+  use(a);
+  b = a + <span class="Constant">1</span>;
+  use(b);
+}
+
+<span class="Comment">// volatile &amp; compiler barrier</span>
+
+<span class="Type">void</span> code_1d()
+{
+  <span class="Type">int</span> a;
+  a = <span class="Constant">1</span>;
+  b = a + <span class="Constant">2</span>;
+  <span class="Statement">asm</span> <span class="Type">volatile</span>(<span class="Constant">&quot;&quot;</span>:::<span class="Constant">&quot;memory&quot;</span>);
+  a = b + <span class="Constant">1</span>;
+  use(a);
+  b = a + <span class="Constant">1</span>;
+  use(b);
+}
+
+<span class="Comment">// Loop invariant</span>
+
+<span class="Type">int</span> code_2a(<span class="Type">int</span> a, <span class="Type">int</span> n)
+{
+  <span class="Type">int</span> i, sum = <span class="Constant">0</span>;
+  <span class="Statement">for</span> (i = <span class="Constant">0</span>; i &lt; n; i++) {
+    <span class="Statement">if</span> (a == <span class="Constant">0</span>)
+      sum += <span class="Constant">1</span>;
+    <span class="Statement">else</span>
+      sum += <span class="Constant">2</span>;
+  }
+  <span class="Statement">return</span> sum;
+}
+
+<span class="Type">int</span> code_2c(<span class="Type">int</span> a, <span class="Type">int</span> n)
+{
+  <span class="Type">int</span> i, sum = <span class="Constant">0</span>;
+  <span class="Statement">for</span> (i = <span class="Constant">0</span>; i &lt; n; i++) {
+    escape(&amp;a);
+    <span class="Statement">if</span> (a % <span class="Constant">2</span> == <span class="Constant">0</span>)
+      sum += <span class="Constant">2</span>;
+    <span class="Statement">else</span>
+      sum += <span class="Constant">1</span>;
+  }
+  <span class="Statement">return</span> sum;
+}
+
+
+<span class="Comment">// Aliasing</span>
+
+<span class="Type">int</span> code_3a(<span class="Type">int</span> *a, <span class="Type">int</span> *b, <span class="Type">int</span> n)
+{
+  <span class="Type">int</span> i, sum=<span class="Constant">0</span>;
+  <span class="Statement">for</span> (i = <span class="Constant">0</span>; i &lt; n; i++) {
+    a[i] += b[<span class="Constant">0</span>];
+  }
+  <span class="Statement">return</span> sum;
+}
+
+<span class="Type">int</span> code_3b(<span class="Type">int</span> *a, <span class="Type">int</span> *b, <span class="Type">int</span> n)
+{
+  <span class="Type">int</span> i, sum=<span class="Constant">0</span>;
+  <span class="Type">int</span> b0 = b[<span class="Constant">0</span>];
+  <span class="Statement">for</span> (i = <span class="Constant">0</span>; i &lt; n; i++) {
+    a[i] += b0;
+  }
+  <span class="Statement">return</span> sum;
+}
+
+
+<span class="Type">int</span> code_3c(<span class="Type">int</span> * __restrict__ a, <span class="Type">int</span> * __restrict__ b, <span class="Type">int</span> n)
+{
+  <span class="Type">int</span> i, sum=<span class="Constant">0</span>;
+  <span class="Statement">for</span> (i = <span class="Constant">0</span>; i &lt; n; i++) {
+    a[i] += b[<span class="Constant">0</span>];
+  }
+  <span class="Statement">return</span> sum;
+}
+
+
+<span class="Type">int</span> code_3d(<span class="Type">int</span> * __restrict__ a, <span class="Type">int</span> * __restrict__ b, <span class="Type">int</span> n)
+{
+  <span class="Type">int</span> i, sum=<span class="Constant">0</span>;
+  escape(b);
+  <span class="Statement">for</span> (i = <span class="Constant">0</span>; i &lt; n; i++) {
+    side_effect();
+    a[i] += b[<span class="Constant">0</span>];
+  }
+  <span class="Statement">return</span> sum;
+}
+
+<span class="Type">int</span> main(<span class="Type">int</span> argc, <span class="Type">char</span> **argv)
+{
+  (<span class="Type">void</span>)argc;
+  (<span class="Type">void</span>)argv;
+  printf(<span class="Constant">&quot;b = </span><span class="Special">%d</span><span class="Special">\n</span><span class="Constant">&quot;</span>,b);
+  <span class="Statement">return</span> <span class="Constant">0</span>;
+}
+
+<span class="Comment">// vim&#0058; tabstop=2 shiftwidth=2 expandtab</span>
+</pre>
+</body>
+</html>
+<!-- vim: set foldmethod=manual : -->
