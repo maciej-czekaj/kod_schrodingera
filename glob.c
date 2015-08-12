@@ -11,3 +11,8 @@ void  escape(int *var)
 {
 	printf("var=%d\n", *var);
 }
+
+void side_effect(void)
+{
+	printf("Hello\n");
+}

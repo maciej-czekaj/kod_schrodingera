@@ -2,60 +2,140 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-#define NOP(x) asm volatile("nop "#x"(%rax,%rax,1)\n")
-#define USE(x) asm volatile(""::"r"(x))
-
 void use(int var);
 void escape(int *var);
+void side_effect(void);
 
 int a,b;
 
-int x,y,z;
+// Side effects and escape analysis
 
-int *bb = &b;
-
-void kod1()
+void code_1a()
 {
 	int a,b;
 	a = 1;
 	b = a + 2;
 	printf("Hello");
-	a = 2;
+	a = b + 1;
 	use(a);
-	a = 3;
+	b = a + 1;
 	use(b);
 }
 
-void kod2()
+void code_1b()
+{
+	int a,b;
+	a = 1;
+	b = a + 2;
+	printf("Hello");
+	a = b + 1;
+	escape(&a);
+	b = a + 1;
+	use(b);
+}
+
+void code_1c()
 {
 	a = 1;
 	b = a + 2;
 	printf("Hello");
-	a = 2;
+	a = b + 1;
 	use(a);
-	a = 3;
+	b = a + 1;
 	use(b);
 }
 
-void kod3()
+// volatile & compiler barrier
+
+void code_1d()
 {
+	int a;
 	a = 1;
 	b = a + 2;
-	asm volatile (
-	"push %%rax\n"
-	"pop %%rax\n"
-	:::);
-	a = 2;
-	a = a + b + 3;
+	asm volatile("":::"memory");
+	a = b + 1;
 	use(a);
+	b = a + 1;
+	use(b);
+}
+
+// Loop invariant
+
+int code_2a(int a, int n)
+{
+	int i, sum = 0;
+	for (i = 0; i < n; i++) {
+		if (a == 0)
+			sum += 1;
+		else
+			sum += 2;
+	}
+	return sum;
+}
+
+int code_2c(int a, int n)
+{
+	int i, sum = 0;
+	for (i = 0; i < n; i++) {
+		escape(&a);
+		if (a % 2 == 0)
+			sum += 2;
+		else
+			sum += 1;
+	}
+	return sum;
+}
+
+
+// Aliasing
+
+int code_3a(int *a, int *b, int n)
+{
+  int i, sum=0;
+  for (i = 0; i < n; i++) {
+    a[i] += b[0];
+  }
+  return sum;
+}
+
+int code_3b(int *a, int *b, int n)
+{
+  int i, sum=0;
+  int b0 = b[0];
+  for (i = 0; i < n; i++) {
+    a[i] += b0;
+  }
+  return sum;
+}
+
+
+int code_3c(int * __restrict__ a, int * __restrict__ b, int n)
+{
+  int i, sum=0;
+  for (i = 0; i < n; i++) {
+    a[i] += b[0];
+  }
+  return sum;
+}
+
+
+int code_3d(int * __restrict__ a, int * __restrict__ b, int n)
+{
+  int i, sum=0;
+  escape(b);
+  for (i = 0; i < n; i++) {
+    side_effect();
+    a[i] += b[0];
+  }
+  return sum;
 }
 
 int main(int argc, char **argv)
 {
 	(void)argc;
 	(void)argv;
-	kod3();
-	printf("b = %d\n",x);
+	printf("b = %d\n",b);
 	return 0;
 }
+
+// vim: tabstop=2 shiftwidth=2 expandtab
