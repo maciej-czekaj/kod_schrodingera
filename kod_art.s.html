@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title>~/projekty/kod_schrodingera/kod_art.s.html</title>
+	<meta name="generator" content="LibreOffice 4.3.7.2 (Linux)"/>
+	<meta name="created" content="00:00:00"/>
+	<meta name="changed" content="2015-08-31T13:05:34.903414089"/>
+	<meta name="colorscheme" content="default"/>
+	<meta name="plugin-version" content="vim7.4_v1"/>
+	<meta name="settings" content="use_css,pre_wrap,no_foldcolumn,prevent_copy="/>
+	<meta name="syntax" content="asm"/>
+	<script>
+<!--
+
+-->
+
+</script>
+	<style type="text/css">
+		p { color: #000000; font-family: monospace }
+		pre { background: #ffffff; color: #000000; font-family: monospace }
+	</style>
+</head>
+<body lang="pl-PL" text="#000000" bgcolor="#ffffff" dir="ltr" style="background: #ffffff">
+<pre><a name="vimCodeElement"></a>
+<font color="#008b8b">code_1a</font>:
+<font color="#008b8b">sub</font>    <font color="#008b8b">rsp</font>,<font color="#ff00ff">0x8</font>
+<font color="#008b8b">mov</font>    <font color="#008b8b">esi</font>,<font color="#ff00ff">0x4008a4</font>
+<font color="#008b8b">mov</font>    <font color="#008b8b">edi</font>,<font color="#ff00ff">0x1</font>
+<font color="#008b8b">xor</font>    <font color="#008b8b">eax</font>,<font color="#008b8b">eax</font>
+<font color="#008b8b">call</font>   <font color="#ff00ff">4004</font><font color="#008b8b">a0</font> &lt;<font color="#008b8b">__printf_chk</font>@<font color="#008b8b">plt</font>&gt;
+<font color="#008b8b">mov</font>    <font color="#008b8b">edi</font>,<font color="#ff00ff">0x4</font>
+<font color="#008b8b">call</font>   <font color="#ff00ff">4007</font><font color="#008b8b">e0</font> &lt;<font color="#008b8b">use</font>&gt;
+<font color="#008b8b">mov</font>    <font color="#008b8b">edi</font>,<font color="#ff00ff">0x5</font>
+<font color="#008b8b">add</font>    <font color="#008b8b">rsp</font>,<font color="#ff00ff">0x8</font>
+<font color="#008b8b">jmp</font>    <font color="#ff00ff">4007</font><font color="#008b8b">e0</font> &lt;<font color="#008b8b">use</font>&gt;
+<font color="#008b8b">nop</font>    <font color="#008b8b">DWORD</font> <font color="#008b8b">PTR</font> [<font color="#008b8b">rax</font>]
+</pre><p>
+<!-- vim: set foldmethod=manual : --></p>
+</body>
+</html>

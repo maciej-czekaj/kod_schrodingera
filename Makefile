@@ -31,7 +31,7 @@ Makefile.uptodate: Makefile
 kod: $(OBJS)
 
 kod.s: kod
-	$(OBJDUMP) -d $< > $@
+	$(OBJDUMP) -d -M intel $< > $@
 
 cfg.main.dot: kod.ll
 	opt-3.6 -dot-cfg $< > /dev/null
